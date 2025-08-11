@@ -19,13 +19,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy hanya composer files dulu untuk caching docker layer
-COPY composer.json composer.lock ./
-
-# Install composer dependencies (vendor)
-RUN composer install --no-dev --optimize-autoloader
-
-
 # Copy project files
 COPY . .
 
