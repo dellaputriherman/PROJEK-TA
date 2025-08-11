@@ -1,0 +1,665 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8090:8080" # Traefik Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - microservice-net
+
+  mysql-absensi:
+    image: mysql:8.0
+    container_name: mysql-absensi
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-absensi
+    ports:
+      - "3304:3306"
+    volumes:
+      - mysql-absensi-data:/var/lib/mysql
+    networks:
+      - microservice-net  
+
+  mysql-dosen:
+    image: mysql:8.0
+    container_name: mysql-dosen
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-dosen
+    ports:
+      - "3305:3306"
+    volumes:
+      - mysql-dosen-data:/var/lib/mysql
+    networks:
+      - microservice-net 
+
+  mysql-jurusanprodi:
+    image: mysql:8.0
+    container_name: mysql-jurusanprodi
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-jurusanprodi
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-jurusanprodi-data:/var/lib/mysql
+    networks:
+      - microservice-net 
+
+  mysql-mahasiswa:
+    image: mysql:8.0
+    container_name: mysql-mahasiswa
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-mahasiswa
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-mahasiswa-data:/var/lib/mysql
+    networks:
+      - microservice-net
+
+  mysql-matakuliah:
+    image: mysql:8.0
+    container_name: mysql-matakuliah
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-matakuliah
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-matakuliah-data:/var/lib/mysql
+    networks:
+      - microservice-net
+
+  mysql-nilai:
+    image: mysql:8.0
+    container_name: mysql-nilai
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-nilai
+    ports:
+      - "3301:3306"
+    volumes:
+      - mysql-nilai-data:/var/lib/mysql
+    networks:
+      - microservice-net
+
+  mysql-kelasmaster:
+    image: mysql:8.0
+    container_name: mysql-kelasmaster
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-kelasmaster
+    ports:
+      - "3302:3306"
+    volumes:
+      - mysql-kelasmaster-data:/var/lib/mysql
+    networks:
+      - microservice-net
+
+  mysql-kelas:
+    image: mysql:8.0
+    container_name: mysql-kelas
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-kelas
+    ports:
+      - "3303:3306"
+    volumes:
+      - mysql-kelas-data:/var/lib/mysql
+    networks:
+      - microservice-net
+
+  mysql-jadwalkuliah:
+    image: mysql:8.0
+    container_name: mysql-jadwalkuliah
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db-jadwalkuliah
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql-jadwalkuliah-data:/var/lib/mysql
+    networks:
+      - microservice-net
+  
+  mongodb:
+    image: mongo:5
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - microservice-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - microservice-net
+
+  absensi-service:
+    build:
+      context: ./command-service/absensi-service
+    container_name: absensi-service
+    # ports:
+    #   - "8000:8000"
+    depends_on:
+      - mysql-absensi
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-absensi
+      DB_PORT: 3306
+      DB_DATABASE: db-absensi
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.absensi.rule=Host(`absensi.localhost`)"
+      - "traefik.http.services.absensi.loadbalancer.server.port=8000"
+    volumes:
+      - ./command-service/absensi-service:/var/www/html
+    networks:
+      - microservice-net
+
+  dosen-service:
+    build:
+      context: ./command-service/dosen-service
+    container_name: dosen-service
+    # ports:
+    #   - "8001:8001"
+    depends_on:
+      - mysql-dosen
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-dosen
+      DB_PORT: 3306
+      DB_DATABASE: db-dosen
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dosen.rule=Host(`dosen.localhost`)"
+      - "traefik.http.services.dosen.loadbalancer.server.port=8001"
+    volumes:
+      - ./command-service/dosen-service:/var/www/html
+    networks:
+      - microservice-net
+
+  jurusanprodi-service:
+    build:
+      context: ./command-service/jurusanprodi-service
+    container_name: jurusanprodi-service
+    # ports:
+    #   - "8002:8002"
+    depends_on:
+      - mysql-jurusanprodi
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-jurusanprodi
+      DB_PORT: 3306
+      DB_DATABASE: db-jurusanprodi
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jurusanprodi.rule=Host(`jurusanprodi.localhost`)"
+      - "traefik.http.services.jurusanprodi.loadbalancer.server.port=8002"
+    volumes:
+      - ./command-service/jurusanprodi-service:/var/www/html
+    networks:
+      - microservice-net
+
+  mahasiswa-service:
+    build:
+      context: ./command-service/mahasiswa-service
+    container_name: mahasiswa-service
+    # ports:
+    #   - "8003:8003"
+    depends_on:
+      - jurusanprodi-service
+      - mysql-mahasiswa
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-mahasiswa
+      DB_PORT: 3306
+      DB_DATABASE: db-mahasiswa
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mahasiswa.rule=Host(`mahasiswa.localhost`)"
+      - "traefik.http.services.mahasiswa.loadbalancer.server.port=8003"
+    volumes:
+      - ./command-service/mahasiswa-service:/var/www/html
+    networks:
+      - microservice-net
+
+  matakuliah-service:
+    build:
+      context: ./command-service/matakuliah-service
+    container_name: matakuliah-service
+    # ports:
+    #   - "8004:8004"
+    depends_on:
+      - mysql-matakuliah
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-matakuliah
+      DB_PORT: 3306
+      DB_DATABASE: db-matakuliah
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matakuliah.rule=Host(`matakuliah.localhost`)"
+      - "traefik.http.services.matakuliah.loadbalancer.server.port=8004"
+    volumes:
+      - ./command-service/matakuliah-service:/var/www/html
+    networks:
+      - microservice-net
+
+  nilai-service:
+    build:
+      context: ./command-service/nilai-service
+    container_name: nilai-service
+    # ports:
+    #   - "8005:8005"
+    depends_on:
+      - mysql-nilai
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-nilai
+      DB_PORT: 3306
+      DB_DATABASE: db-nilai
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nilai.rule=Host(`nilai.localhost`)"
+      - "traefik.http.services.nilai.loadbalancer.server.port=8005"
+    volumes:
+      - ./command-service/nilai-service:/var/www/html
+    networks:
+      - microservice-net
+
+  kelasmaster-service:
+    build:
+      context: ./command-service/kelasmaster-service
+    container_name: kelasmaster-service
+    # ports:
+    #   - "8006:8006"
+    depends_on:
+      - mysql-kelasmaster
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-kelasmaster
+      DB_PORT: 3306
+      DB_DATABASE: db-kelasmaster
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kelasmaster.rule=Host(`kelasmaster.localhost`)"
+      - "traefik.http.services.kelasmaster.loadbalancer.server.port=8006"
+    volumes:
+      - ./command-service/kelasmaster-service:/var/www/html
+    networks:
+      - microservice-net
+
+  kelas-service:
+    build:
+      context: ./command-service/kelas-service
+    container_name: kelas-service
+    # ports:
+    #   - "8007:8007"
+    depends_on:
+      - mysql-kelas
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-kelas
+      DB_PORT: 3306
+      DB_DATABASE: db-kelas
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kelas.rule=Host(`kelas.localhost`)"
+      - "traefik.http.services.kelas.loadbalancer.server.port=8007"
+    volumes:
+      - ./command-service/kelas-service:/var/www/html
+    networks:
+      - microservice-net
+  
+  jadwalkuliah-service:
+    build:
+      context: ./command-service/jadwalkuliah-service
+    container_name: jadwalkuliah-service
+    # ports:
+    #   - "8008:8008"
+    depends_on:
+      - mysql-jadwalkuliah
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql-jadwalkuliah
+      DB_PORT: 3306
+      DB_DATABASE: db-jadwalkuliah
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jadwalkuliah.rule=Host(`jadwalkuliah.localhost`)"
+      - "traefik.http.services.jadwalkuliah.loadbalancer.server.port=8008"
+    volumes:
+      - ./command-service/jadwalkuliah-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-absensi-service:
+    build:
+      context: ./query-service/absensi-service
+    container_name: query-absensi-service
+    # ports:
+    #   - "8100:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-absensi.rule=Host(`query-absensi.localhost`)"
+      - "traefik.http.services.query-absensi.loadbalancer.server.port=8100"
+    volumes:
+      - ./query-service/absensi-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-dosen-service:
+    build:
+      context: ./query-service/dosen-service
+    container_name: query-dosen-service
+    # ports:
+    #   - "8101:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-dosen.rule=Host(`query-dosen.localhost`)"
+      - "traefik.http.services.query-dosen.loadbalancer.server.port=8101"
+    volumes:
+      - ./query-service/dosen-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-jurusanprodi-service:
+    build:
+      context: ./query-service/jurusanprodi-service
+    container_name: query-jurusanprodi-service
+    # ports:
+    #   - "8102:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-jurusanprodi.rule=Host(`query-jurusanprodi.localhost`)"
+      - "traefik.http.services.query-jurusanprodi.loadbalancer.server.port=8102"
+    volumes:
+      - ./query-service/jurusanprodi-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-mahasiswa-service:
+    build:
+      context: ./query-service/mahasiswa-service
+    container_name: query-mahasiswa-service
+    # ports:
+    #   - "8103:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-mahasiswa.rule=Host(`query-mahasiswa.localhost`)"
+      - "traefik.http.services.query-mahasiswa.loadbalancer.server.port=8103"
+    volumes:
+      - ./query-service/mahasiswa-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-matakuliah-service:
+    build:
+      context: ./query-service/matakuliah-service
+    container_name: query-matakuliah-service
+    # ports:
+    #   - "8104:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-matakuliah.rule=Host(`query-matakuliah.localhost`)"
+      - "traefik.http.services.query-matakuliah.loadbalancer.server.port=8104"
+    volumes:
+      - ./query-service/matakuliah-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-nilai-service:
+    build:
+      context: ./query-service/nilai-service
+    container_name: query-nilai-service
+    # ports:
+    #   - "8105:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-nilai.rule=Host(`query-nilai.localhost`)"
+      - "traefik.http.services.query-nilai.loadbalancer.server.port=8105"
+    volumes:
+      - ./query-service/nilai-service:/var/www/html
+    networks:
+      - microservice-net
+  
+  query-kelasmaster-service:
+    build:
+      context: ./query-service/kelasmaster-service
+    container_name: query-kelasmaster-service
+    # ports:
+    #   - "8106:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-kelasmaster.rule=Host(`query-kelasmaster.localhost`)"
+      - "traefik.http.services.query-kelasmaster.loadbalancer.server.port=8106"
+    volumes:
+      - ./query-service/kelasmaster-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-kelas-service:
+    build:
+      context: ./query-service/kelas-service
+    container_name: query-kelas-service
+    # ports:
+    #   - "8107:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-kelas.rule=Host(`query-kelas.localhost`)"
+      - "traefik.http.services.query-kelas.loadbalancer.server.port=8107"
+    volumes:
+      - ./query-service/kelas-service:/var/www/html
+    networks:
+      - microservice-net
+
+  query-jadwalkuliah-service:
+    build:
+      context: ./query-service/jadwalkuliah-service
+    container_name: query-jadwalkuliah-service
+    # ports:
+    #   - "8108:8000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      DB_CONNECTION: mongodb
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_DATABASE: esia_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.query-jadwalkuliah.rule=Host(`query-jadwalkuliah.localhost`)"
+      - "traefik.http.services.query-jadwalkuliah.loadbalancer.server.port=8108"
+    volumes:
+      - ./query-service/jadwalkuliah-service:/var/www/html
+    networks:
+      - microservice-net
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - rabbitmq
+      - mahasiswa-service
+      - query-mahasiswa-service
+      - query-jurusanprodi-service
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+    volumes:
+      - ./frontend:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    networks:
+      - microservice-net
+
+
+volumes:
+  mysql-absensi-data:
+  mysql-dosen-data:
+  mysql-jurusanprodi-data:
+  mysql-mahasiswa-data:
+  mysql-matakuliah-data:
+  mysql-nilai-data:
+  mysql-kelasmaster-data:
+  mysql-kelas-data:
+  mysql-jadwalkuliah-data:
+  mongo-data:
+
+networks:
+  microservice-net:
+    driver: bridge
