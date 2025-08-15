@@ -468,7 +468,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.query-jurusanprodi.rule=Host(`query-jurusanprodi.localhost`)"
-      - "traefik.http.services.query-jurusanprodi.loadbalancer.server.port=8102"
+      - "traefik.http.services.query-jurusanprodi.loadbalancer.server.port=8000"
     volumes:
       - ./query-service/jurusanprodi-service:/var/www/html
     networks:
