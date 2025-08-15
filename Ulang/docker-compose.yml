@@ -159,8 +159,8 @@ services:
     build:
       context: ./command-service/absensi-service
     container_name: absensi-service
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - mysql-absensi
       - rabbitmq
@@ -186,8 +186,8 @@ services:
     build:
       context: ./command-service/dosen-service
     container_name: dosen-service
-    # ports:
-    #   - "8001:8001"
+    ports:
+      - "8001:8001"
     depends_on:
       - mysql-dosen
       - rabbitmq
@@ -213,8 +213,8 @@ services:
     build:
       context: ./command-service/jurusanprodi-service
     container_name: jurusanprodi-service
-    # ports:
-    #   - "8002:8002"
+    ports:
+      - "8002:8002"
     depends_on:
       - mysql-jurusanprodi
       - rabbitmq
@@ -240,8 +240,8 @@ services:
     build:
       context: ./command-service/mahasiswa-service
     container_name: mahasiswa-service
-    # ports:
-    #   - "8003:8003"
+    ports:
+      - "8003:8003"
     depends_on:
       - jurusanprodi-service
       - mysql-mahasiswa
@@ -268,8 +268,8 @@ services:
     build:
       context: ./command-service/matakuliah-service
     container_name: matakuliah-service
-    # ports:
-    #   - "8004:8004"
+    ports:
+      - "8004:8004"
     depends_on:
       - mysql-matakuliah
       - rabbitmq
@@ -295,8 +295,8 @@ services:
     build:
       context: ./command-service/nilai-service
     container_name: nilai-service
-    # ports:
-    #   - "8005:8005"
+    ports:
+      - "8005:8005"
     depends_on:
       - mysql-nilai
       - rabbitmq
@@ -322,8 +322,8 @@ services:
     build:
       context: ./command-service/kelasmaster-service
     container_name: kelasmaster-service
-    # ports:
-    #   - "8006:8006"
+    ports:
+      - "8006:8006"
     depends_on:
       - mysql-kelasmaster
       - rabbitmq
@@ -349,8 +349,8 @@ services:
     build:
       context: ./command-service/kelas-service
     container_name: kelas-service
-    # ports:
-    #   - "8007:8007"
+    ports:
+      - "8007:8007"
     depends_on:
       - mysql-kelas
       - rabbitmq
@@ -376,8 +376,8 @@ services:
     build:
       context: ./command-service/jadwalkuliah-service
     container_name: jadwalkuliah-service
-    # ports:
-    #   - "8008:8008"
+    ports:
+      - "8008:8008"
     depends_on:
       - mysql-jadwalkuliah
       - rabbitmq
@@ -403,8 +403,8 @@ services:
     build:
       context: ./query-service/absensi-service
     container_name: query-absensi-service
-    # ports:
-    #   - "8100:8000"
+    ports:
+      - "8100:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -428,8 +428,8 @@ services:
     build:
       context: ./query-service/dosen-service
     container_name: query-dosen-service
-    # ports:
-    #   - "8101:8000"
+    ports:
+      - "8101:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -453,8 +453,8 @@ services:
     build:
       context: ./query-service/jurusanprodi-service
     container_name: query-jurusanprodi-service
-    # ports:
-    #   - "8102:8000"
+    ports:
+      - "8102:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -478,8 +478,8 @@ services:
     build:
       context: ./query-service/mahasiswa-service
     container_name: query-mahasiswa-service
-    # ports:
-    #   - "8103:8000"
+    ports:
+      - "8103:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -503,8 +503,8 @@ services:
     build:
       context: ./query-service/matakuliah-service
     container_name: query-matakuliah-service
-    # ports:
-    #   - "8104:8000"
+    ports:
+      - "8104:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -528,8 +528,8 @@ services:
     build:
       context: ./query-service/nilai-service
     container_name: query-nilai-service
-    # ports:
-    #   - "8105:8000"
+    ports:
+      - "8105:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -553,8 +553,8 @@ services:
     build:
       context: ./query-service/kelasmaster-service
     container_name: query-kelasmaster-service
-    # ports:
-    #   - "8106:8000"
+    ports:
+      - "8106:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -578,8 +578,8 @@ services:
     build:
       context: ./query-service/kelas-service
     container_name: query-kelas-service
-    # ports:
-    #   - "8107:8000"
+    ports:
+      - "8107:8000"
     depends_on:
       - mongodb
       - rabbitmq
@@ -603,8 +603,8 @@ services:
     build:
       context: ./query-service/jadwalkuliah-service
     container_name: query-jadwalkuliah-service
-    # ports:
-    #   - "8108:8000"
+    ports:
+      - "8108:8000"
     depends_on:
       - mongodb
       - rabbitmq
