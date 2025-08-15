@@ -454,7 +454,7 @@ services:
       context: ./query-service/jurusanprodi-service
     container_name: query-jurusanprodi-service
     ports:
-      - "8102:8102"
+      - "8102:8000"
     depends_on:
       - mongodb
       - rabbitmq
