@@ -454,7 +454,7 @@ services:
       context: ./query-service/jurusanprodi-service
     container_name: query-jurusanprodi-service
     ports:
-      - "8102:8000"
+      - "8102:8102"
     depends_on:
       - mongodb
       - rabbitmq
@@ -468,7 +468,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.query-jurusanprodi.rule=Host(`query-jurusanprodi.localhost`)"
-      - "traefik.http.services.query-jurusanprodi.loadbalancer.server.port=8000"
+      - "traefik.http.services.query-jurusanprodi.loadbalancer.server.port=8102"
     volumes:
       - ./query-service/jurusanprodi-service:/var/www/html
     networks:
