@@ -8,7 +8,7 @@ use App\Http\Controllers\DosenController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\MatakuliahController;
-use App\Http\Controllers\KelasMasterController;
+use App\Http\Controllers\KelasmasterController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\JadwalkuliahController;
 
@@ -88,13 +88,12 @@ Route::prefix('prodi')->name('jurusanprodi.prodi.')->group(function () {
 });
 // Route::post('/prodi/store', [App\Http\Controllers\ProdiController::class, 'store'])->name('jurusanprodi.prodi.store');
 
-Route::get('/kelasmaster/create', [KelasMasterController::class, 'create'])->name('kelasmaster.create');
-Route::post('/kelasmaster', [KelasMasterController::class, 'store'])->name('kelasmaster.store');
-Route::get('/kelasmaster', [KelasMasterController::class, 'index'])->name('kelasmaster.index');
-Route::get('/kelasmaster/{kodekelas}/edit', [KelasMasterController::class, 'edit'])->name('kelasmaster.edit');
-Route::put('/kelasmaster/{kodekelas}', [KelasMasterController::class, 'update'])->name('kelasmaster.update');
-Route::delete('/kelasmaster/{kodekelas}', [KelasMasterController::class, 'destroy'])->name('kelasmaster.destroy');
-
+Route::get('/kelasmaster/create', [KelasmasterController::class, 'create'])->name('kelasmaster.create');
+Route::post('/kelasmaster', [KelasmasterController::class, 'store'])->name('kelasmaster.store');
+Route::get('/kelasmaster', [KelasmasterController::class, 'index'])->name('kelasmaster.index');
+Route::get('/kelasmaster/{kodekelas}/edit', [KelasmasterController::class, 'edit'])->name('kelasmaster.edit');
+Route::put('/kelasmaster/{kodekelas}', [KelasmasterController::class, 'update'])->name('kelasmaster.update');
+Route::delete('/kelasmaster/{kodekelas}', [KelasmasterController::class, 'destroy'])->name('kelasmaster.destroy');
 
 Route::get('/jadwalkuliah/create', [JadwalKuliahController::class, 'create'])->name('jadwalkuliah.create');
 Route::post('/jadwalkuliah', [JadwalKuliahController::class, 'store'])->name('jadwalkuliah.store');
