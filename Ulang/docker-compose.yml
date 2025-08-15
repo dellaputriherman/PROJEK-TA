@@ -160,7 +160,7 @@ services:
       context: ./command-service/absensi-service
     container_name: absensi-service
     ports:
-      - "8000:8000"
+      - "8009:8000"
     depends_on:
       - mysql-absensi
       - rabbitmq
@@ -176,7 +176,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.absensi.rule=Host(`absensi.localhost`)"
-      - "traefik.http.services.absensi.loadbalancer.server.port=8000"
+      - "traefik.http.services.absensi.loadbalancer.server.port=8009"
     volumes:
       - ./command-service/absensi-service:/var/www/html
     networks:
