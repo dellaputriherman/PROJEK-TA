@@ -93,10 +93,10 @@ class NilaiController extends Controller
         }
     }
 
-   public function edit($nim, $kodematkul, $tanggal)
+   public function edit($nim, $kodematkul)
     {
         try {
-            $response = Http::get("http://query-absensi-service:8100/api/sync/absensi/{$nim}/{$kodematkul}/{$tanggal}");
+            $response = Http::get("http://query-absensi-service:8100/api/sync/absensi/{$nim}/{$kodematkul}");
 
             if (!$response->successful()) {
                 return redirect()->route('absensi.index')->with('error', 'Data absensi tidak ditemukan.');
