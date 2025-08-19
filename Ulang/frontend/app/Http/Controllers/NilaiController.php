@@ -99,7 +99,7 @@ class NilaiController extends Controller
             $response = Http::get("http://query-absensi-service:8100/api/sync/absensi/{$nim}/{$kodematkul}");
 
             if (!$response->successful()) {
-                return redirect()->route('absensi.index')->with('error', 'Data absensi tidak ditemukan.');
+                return redirect()->route('nilai.index')->with('error', 'Data absensi tidak ditemukan.');
             }
 
             $absensi = $response->json();
@@ -117,7 +117,7 @@ class NilaiController extends Controller
             return view('absensi.edit', compact('absensi', 'matakuliah', 'kelasmaster'));
         } catch (\Exception $e) {
             Log::error('[AbsensiController@edit] Exception: ' . $e->getMessage());
-            return redirect()->route('absensi.index')->with('error', 'Terjadi kesalahan saat mengambil data absensi.');
+            return redirect()->route('nilai.index')->with('error', 'Terjadi kesalahan saat mengambil data absensi.');
         }
     }
 
