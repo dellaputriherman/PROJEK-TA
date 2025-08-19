@@ -14,10 +14,16 @@
                 <input type="text" class="form-control" id="nim" name="nim" value="{{ $nilai['nim'] }}" required>
             </div>
 
-            <div class="mb-3">
-                <label for="kodematkul" class="form-label">Kode MataKuliah</label>
-                <input type="text" class="form-control" id="kodematkul" name="kodematkul" value="{{ $nilai['kodematkul'] }}" required>
-            </div>
+               <div class="mb-3">
+            <label for="kodematkul" class="form-label">Mata Kuliah</label>
+            <select name="kodematkul" id="kodematkul" class="form-control" required>
+                @foreach($matakuliah as $kode => $nama)
+                    <option value="{{ $kode }}" {{ $nilai['kodematkul'] == $kode ? 'selected' : '' }}>
+                        {{ $nama }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
             <div class="mb-3">
                 <label for="nilaiangka" class="form-label">Nilai</label>

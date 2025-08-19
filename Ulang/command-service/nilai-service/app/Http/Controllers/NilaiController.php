@@ -106,6 +106,12 @@ class NilaiController extends Controller
             Log::error("Gagal ambil data referensi mahasiswa/matakuliah: " . $e->getMessage());
         }
 
+        $nilai->update([
+        'nilaiangka' => $request->nilaiangka,
+        'nama'       => $mahasiswa['nama'] ?? $nilai->nama,
+        'namamatkul' => $matakuliah['namamatkul'] ?? $nilai->namamatkul,
+        ]);
+
         $payload = [
             'nim' => $nilai->nim,
             'nama' => $mahasiswa['nama'] ?? null,
