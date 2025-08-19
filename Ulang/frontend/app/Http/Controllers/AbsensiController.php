@@ -62,7 +62,7 @@ class AbsensiController extends Controller
             'status' => 'required|in:Hadir,Sakit,Izin,Alfa',
         ]);
 
-        $response = Http::post('http://absensi-service:8000/api/absensi', [
+        $response = Http::post('http://absensi-service:8009/api/absensi', [
             'nim' => $request->nim,
             'kodekelas' => $request->kodekelas,
             'kodematkul' => $request->kodematkul,
@@ -123,7 +123,7 @@ class AbsensiController extends Controller
                 'status' => $request->status,
             ];
 
-            $response = Http::put("http://absensi-service:8000/api/absensi/{$nim}/{$kodematkul}/{$tanggal}", $payload);
+            $response = Http::put("http://absensi-service:8009/api/absensi/{$nim}/{$kodematkul}/{$tanggal}", $payload);
 
             if ($response->successful()) {
                 return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil diperbarui.');
@@ -141,7 +141,7 @@ class AbsensiController extends Controller
     public function destroy($nim, $kodematkul, $tanggal)
     {
         try {
-            $response = Http::delete("http://absensi-service:8000/api/absensi/{$nim}/{$kodematkul}/{$tanggal}");
+            $response = Http::delete("http://absensi-service:8009/api/absensi/{$nim}/{$kodematkul}/{$tanggal}");
 
             if ($response->successful()) {
                 return redirect()->route('absensi.index')->with('success', 'Data absensi berhasil dihapus.');
